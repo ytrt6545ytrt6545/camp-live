@@ -1,11 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'core/plugin_registry.dart';
 import 'core/ui_renderer.dart';
 import 'core/base_plugin.dart';
 import 'plugins/catering_plugin.dart';
 import 'plugins/asset_plugin.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 初始化 Firebase
+  // 注意：此為 Web/Desktop 通用設定，若要在特定平台執行需確保對應 SDK 已正確配置
+  try {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "AIzaSyBSW0fRqKMfdQoWJujOuAisPF-SOeOpl3Q",
+        appId: "1:354936711281:web:ebcd5f7cc68f37f68c13d0",
+        messagingSenderId: "354936711281",
+        projectId: "camp-live-cloud-c2687",
+        storageBucket: "camp-live-cloud-c2687.firebasestorage.app",
+      ),
+    );
+    debugPrint('Firebase 初始化成功');
+  } catch (e) {
+    debugPrint('Firebase 初始化失敗: $e');
+  }
+
   // 啟動前註冊插件
   final registry = PluginRegistry();
   registry.register(CateringPlugin());
@@ -74,11 +94,25 @@ class _PluginHostPageState extends State<PluginHostPage> {
     });
   }
 
-  void _handleSave() {
+  void _handleSave() async {
+    // 呼叫插件原本的 action (處理本地邏輯)
     _activePlugin.onAction('save', _currentValues);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('已儲存 ${_activePlugin.name} 的資料（請查看 Console）')),
-    );
+
+    // 呼叫雲端儲存
+    try {
+      await _activePlugin.saveToCloud(_currentValues);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('已同步 ${_activePlugin.name} 資料至雲端 Firestore')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('雲端儲存失敗: $e'), backgroundColor: Colors.redAccent),
+        );
+      }
+    }
   }
 
   @override
@@ -182,7 +216,7 @@ class _PluginHostPageState extends State<PluginHostPage> {
                       ),
                     ),
                     child: const Text(
-                      '儲存',
+                      '儲存至雲端',
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
