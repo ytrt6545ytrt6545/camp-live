@@ -1,0 +1,16 @@
+# camp-live Project Rules
+
+## 1. 語言與溝通規範 (Language & Communication)
+- **溝通語言**：AI 與使用者之間的所有溝通必須使用 **繁體中文**。
+- **文件規範**：所有產出的開發計畫書 (Implementation Plan)、任務清單 (Task) 及任務回顧 (Walkthrough) 均必須使用 **繁體中文**。
+- **註解與文檔**：程式碼中的註解與專案文檔（如 README）優先使用 **繁體中文**。
+
+## 2. 開發準則 (Development Principles)
+- **模組化**：保持代碼整潔且高度模組化。
+- **視覺卓越**：UI 設計需追求高品質、現代感，避免使用枯燥的預設樣式。
+- **DRY 原則**：避免重複代碼，提取公共組件或工具函式。
+
+## 3. 目錄結構 (Directory Structure)
+- `src/`: 存放原始碼。
+- `assets/`: 存放靜態資源（圖片、字體等）。
+- `docs/`: 存放專案相關文檔。
