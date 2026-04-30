@@ -11,6 +11,9 @@ class CateringPlugin extends BasePlugin {
   String get id => 'catering_management';
 
   @override
+  int get requiredRank => 10; // 一般組員以上可存取
+
+  @override
   List<PluginProperty> get properties => [
         PluginProperty(
           key: 'volunteer_name',

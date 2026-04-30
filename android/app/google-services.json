@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "354936711281",
+    "firebase_url": "https://camp-live-cloud-c2687-default-rtdb.firebaseio.com",
+    "project_id": "camp-live-cloud-c2687",
+    "storage_bucket": "camp-live-cloud-c2687.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:354936711281:android:fa61ec53f23ff4cf8c13d0",
+        "android_client_info": {
+          "package_name": "com.example.camp_live"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4dkIEzNMIgBIf4WADkA2A9mAKcl-anUI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

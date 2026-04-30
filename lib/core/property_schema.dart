@@ -5,6 +5,8 @@ enum PropertyType {
   boolean,
   color,
   options,
+  qrScanner,
+  signature,
 }
 
 /// 插件屬性定義類別

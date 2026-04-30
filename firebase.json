@@ -4,5 +4,45 @@
     "location": "nam5",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
+  },
+  "database": {
+    "rules": "database.rules.json"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "camp-live-cloud-c2687",
+          "appId": "1:354936711281:android:fa61ec53f23ff4cf8c13d0",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "camp-live-cloud-c2687",
+          "configurations": {
+            "android": "1:354936711281:android:fa61ec53f23ff4cf8c13d0",
+            "ios": "1:354936711281:ios:905b24ff4dee1d7f8c13d0",
+            "macos": "1:354936711281:ios:905b24ff4dee1d7f8c13d0",
+            "web": "1:354936711281:web:ebcd5f7cc68f37f68c13d0",
+            "windows": "1:354936711281:web:191cdc6933d7c95a8c13d0"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   }
 }

@@ -10,7 +10,16 @@ class AssetPlugin extends BasePlugin {
   String get id => 'asset_management';
 
   @override
+  int get requiredRank => 50; // 大組長以上可存取
+
+  @override
   List<PluginProperty> get properties => [
+        PluginProperty(
+          key: 'equipment_id',
+          label: '資材編號 (QR)',
+          type: PropertyType.qrScanner,
+          defaultValue: '',
+        ),
         PluginProperty(
           key: 'equipment_name',
           label: '設備名稱',
@@ -28,6 +37,12 @@ class AssetPlugin extends BasePlugin {
           label: '是否借出',
           type: PropertyType.boolean,
           defaultValue: false,
+        ),
+        PluginProperty(
+          key: 'borrower_signature',
+          label: '領用人簽名',
+          type: PropertyType.signature,
+          defaultValue: '',
         ),
       ];
 
