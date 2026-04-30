@@ -11,13 +11,13 @@ class PermissionService {
   PermissionService._internal();
 
   UserModel? _currentUser;
-  
+
   // 預設的角色定義
   final Map<String, RoleModel> _roles = {};
   final List<UserModel> _users = [];
 
   UserModel? get currentUser => _currentUser;
-  
+
   int wizardStep = 0;
   bool get isSystemActivated => wizardStep >= 4; // Step 4 代表完全完成引導
 
@@ -28,7 +28,9 @@ class PermissionService {
     _initializeDefaultRoles();
     await _syncUsersFromCloud();
     await _syncWizardState();
-    debugPrint('PermissionService 初始化完成，當前使用者: ${_currentUser?.name} (Rank: ${_currentUser?.rank}), WizardStep: $wizardStep');
+    debugPrint(
+      'PermissionService 初始化完成，當前使用者: ${_currentUser?.name} (Rank: ${_currentUser?.rank}), WizardStep: $wizardStep',
+    );
   }
 
   Future<void> _syncWizardState() async {
@@ -76,18 +78,44 @@ class PermissionService {
       final data = snapshot.value as Map<dynamic, dynamic>;
       _users.clear();
       data.forEach((key, value) {
-        final Map<String, dynamic> json = Map<String, dynamic>.from(value as Map);
+        final Map<String, dynamic> json = Map<String, dynamic>.from(
+          value as Map,
+        );
         _users.add(UserModel.fromJson(json));
       });
     } else {
       // 如果雲端沒有資料，寫入預設的測試帳號
       final defaultUsers = [
-        const UserModel(uid: 'mock_user_123', name: '測試大組長', roleId: 'leader', rank: 50, managedGroups: ['CATERING_01', 'CATERING_02']),
-        const UserModel(uid: 'admin_1', name: '系統管理員', roleId: 'admin', rank: 100, managedGroups: ['GLOBAL']),
-        const UserModel(uid: 'member_1', name: '王大明', roleId: 'member', rank: 10, managedGroups: []),
-        const UserModel(uid: 'member_2', name: '李小華', roleId: 'member', rank: 10, managedGroups: []),
+        const UserModel(
+          uid: 'mock_user_123',
+          name: '測試大組長',
+          roleId: 'leader',
+          rank: 50,
+          managedGroups: ['CATERING_01', 'CATERING_02'],
+        ),
+        const UserModel(
+          uid: 'admin_1',
+          name: '系統管理員',
+          roleId: 'admin',
+          rank: 100,
+          managedGroups: ['GLOBAL'],
+        ),
+        const UserModel(
+          uid: 'member_1',
+          name: '王大明',
+          roleId: 'member',
+          rank: 10,
+          managedGroups: [],
+        ),
+        const UserModel(
+          uid: 'member_2',
+          name: '李小華',
+          roleId: 'member',
+          rank: 10,
+          managedGroups: [],
+        ),
       ];
-      
+
       _users.addAll(defaultUsers);
       for (var user in defaultUsers) {
         await ref.child(user.uid).set(user.toJson());
@@ -95,8 +123,11 @@ class PermissionService {
     }
 
     // 為了測試，預設登入 一般組員 (Rank 10)，以便觸發引導精靈
-    _currentUser = _users.firstWhere((u) => u.uid == 'member_1', orElse: () => _users.first);
-    
+    _currentUser = _users.firstWhere(
+      (u) => u.uid == 'member_1',
+      orElse: () => _users.first,
+    );
+
     // 初始化 activeGroupId
     if (_currentUser != null && _currentUser!.managedGroups.isNotEmpty) {
       activeGroupId = _currentUser!.managedGroups.first;
@@ -130,9 +161,11 @@ class PermissionService {
       if (_currentUser?.uid == uid) {
         _currentUser = updatedUser;
       }
-      
+
       // 同步回雲端
-      await FirebaseDatabase.instance.ref('users/$uid').set(updatedUser.toJson());
+      await FirebaseDatabase.instance
+          .ref('users/$uid')
+          .set(updatedUser.toJson());
       debugPrint('已將使用者 ${user.name} 指派為 $groupPath 的負責人並同步至雲端');
     }
   }
@@ -177,9 +210,11 @@ class PermissionService {
         _currentUser = updatedUser;
         activeGroupId = 'GLOBAL';
       }
-      
+
       // 同步回雲端
-      await FirebaseDatabase.instance.ref('users/$uid').set(updatedUser.toJson());
+      await FirebaseDatabase.instance
+          .ref('users/$uid')
+          .set(updatedUser.toJson());
       debugPrint('已將使用者 ${user.name} 提升為 Rank 100 (GLOBAL) 並同步至雲端');
     }
   }

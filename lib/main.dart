@@ -73,8 +73,13 @@ class _PluginHostPageState extends State<PluginHostPage> {
   @override
   void initState() {
     super.initState();
-    final plugins = PluginRegistry().getAllPlugins()
-        .where((p) => PermissionService.instance.hasAccess(p.requiredRank))
+    final plugins = PluginRegistry()
+        .getAllPlugins()
+        .where(
+          (p) =>
+              !p.isHidden &&
+              PermissionService.instance.hasAccess(p.requiredRank),
+        )
         .toList();
     _activePlugin = plugins.isNotEmpty ? plugins.first : null;
     if (_activePlugin != null) {
@@ -106,7 +111,7 @@ class _PluginHostPageState extends State<PluginHostPage> {
 
   void _handleSave() async {
     if (_activePlugin == null) return;
-    
+
     // 呼叫插件原本的 action (處理本地邏輯)
     _activePlugin!.onAction('save', _currentValues);
 
@@ -115,13 +120,18 @@ class _PluginHostPageState extends State<PluginHostPage> {
       await _activePlugin!.saveToCloud(_currentValues);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('已同步 ${_activePlugin!.name} 資料至雲端 Realtime Database')),
+          SnackBar(
+            content: Text('已同步 ${_activePlugin!.name} 資料至雲端 Realtime Database'),
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('雲端儲存失敗: $e'), backgroundColor: Colors.redAccent),
+          SnackBar(
+            content: Text('雲端儲存失敗: $e'),
+            backgroundColor: Colors.redAccent,
+          ),
         );
       }
     }
@@ -131,10 +141,10 @@ class _PluginHostPageState extends State<PluginHostPage> {
     return Container(
       width: 250,
       decoration: BoxDecoration(
-        color: isDrawer ? const Color(0xFF0F172A) : Colors.white.withAlpha(8), // Drawer 時使用實底色
-        border: Border(
-          right: BorderSide(color: Colors.white.withAlpha(20)),
-        ),
+        color: isDrawer
+            ? const Color(0xFF0F172A)
+            : Colors.white.withAlpha(8), // Drawer 時使用實底色
+        border: Border(right: BorderSide(color: Colors.white.withAlpha(20))),
       ),
       child: SafeArea(
         child: ListView.builder(
@@ -143,7 +153,7 @@ class _PluginHostPageState extends State<PluginHostPage> {
           itemBuilder: (context, index) {
             final plugin = plugins[index];
             final isActive = _activePlugin?.id == plugin.id;
-            
+
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               child: InkWell(
@@ -155,12 +165,19 @@ class _PluginHostPageState extends State<PluginHostPage> {
                 },
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   decoration: BoxDecoration(
-                    color: isActive ? const Color(0xFF6366F1).withAlpha(40) : Colors.transparent,
+                    color: isActive
+                        ? const Color(0xFF6366F1).withAlpha(40)
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isActive ? const Color(0xFF6366F1).withAlpha(100) : Colors.transparent,
+                      color: isActive
+                          ? const Color(0xFF6366F1).withAlpha(100)
+                          : Colors.transparent,
                     ),
                   ),
                   child: Row(
@@ -176,7 +193,9 @@ class _PluginHostPageState extends State<PluginHostPage> {
                           plugin.name,
                           style: TextStyle(
                             color: isActive ? Colors.white : Colors.white70,
-                            fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                            fontWeight: isActive
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                         ),
                       ),
@@ -193,19 +212,34 @@ class _PluginHostPageState extends State<PluginHostPage> {
 
   @override
   Widget build(BuildContext context) {
-    final plugins = PluginRegistry().getAllPlugins()
-        .where((p) => PermissionService.instance.hasAccess(p.requiredRank))
+    final plugins = PluginRegistry()
+        .getAllPlugins()
+        .where(
+          (p) =>
+              !p.isHidden &&
+              PermissionService.instance.hasAccess(p.requiredRank),
+        )
         .toList();
 
     final bool needsWizard = PermissionService.instance.wizardStep < 4;
-    
-    // 如果需要引導精靈，強制顯示它
-    if (needsWizard) {
+    debugPrint('Current Wizard Step: ${PermissionService.instance.wizardStep}, Needs Wizard: $needsWizard');
+
+    if (!needsWizard) {
+      if (_activePlugin == null && plugins.isNotEmpty) {
+        _activePlugin = plugins.first;
+      } else if (_activePlugin != null && !plugins.contains(_activePlugin)) {
+        _activePlugin = plugins.isNotEmpty ? plugins.first : null;
+      }
+    } else {
+      // 如果需要引導精靈，強制顯示它
       final wizardPlugin = PluginRegistry().getPlugin('startup_wizard');
       return Scaffold(
-        body: wizardPlugin != null 
-          ? wizardPlugin.buildCustomUI(context, {}, (k, v) => setState(() {})) 
-          : const Center(child: Text('系統啟動中...')),
+        body: wizardPlugin != null
+            ? wizardPlugin.buildCustomUI(context, {}, (k, v) {
+                debugPrint('Wizard reported change: $k = $v');
+                setState(() {});
+              })
+            : const Center(child: Text('系統啟動中...')),
       );
     }
 
@@ -228,7 +262,12 @@ class _PluginHostPageState extends State<PluginHostPage> {
               ),
             ),
             actions: [
-              if (PermissionService.instance.currentUser != null && PermissionService.instance.currentUser!.managedGroups.isNotEmpty)
+              if (PermissionService.instance.currentUser != null &&
+                  PermissionService
+                      .instance
+                      .currentUser!
+                      .managedGroups
+                      .isNotEmpty)
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.switch_account, color: Colors.white),
                   tooltip: '切換身分',
@@ -237,8 +276,15 @@ class _PluginHostPageState extends State<PluginHostPage> {
                     setState(() {
                       PermissionService.instance.setActiveGroup(groupId);
                       // 重置 plugin 狀態
-                      final updatedPlugins = PluginRegistry().getAllPlugins()
-                          .where((p) => PermissionService.instance.hasAccess(p.requiredRank))
+                      final updatedPlugins = PluginRegistry()
+                          .getAllPlugins()
+                          .where(
+                            (p) =>
+                                !p.isHidden &&
+                                PermissionService.instance.hasAccess(
+                                  p.requiredRank,
+                                ),
+                          )
                           .toList();
                       if (updatedPlugins.isNotEmpty) {
                         _switchPlugin(updatedPlugins.first);
@@ -249,77 +295,100 @@ class _PluginHostPageState extends State<PluginHostPage> {
                     });
                   },
                   itemBuilder: (BuildContext context) {
-                    return PermissionService.instance.currentUser!.managedGroups.map((String group) {
-                      final isActive = group == PermissionService.instance.activeGroupId;
-                      return PopupMenuItem<String>(
-                        value: group,
-                        child: Row(
-                          children: [
-                            Icon(
-                              isActive ? Icons.check_circle : Icons.workspaces_outline,
-                              color: isActive ? Colors.greenAccent : Colors.white54,
-                              size: 20,
+                    return PermissionService.instance.currentUser!.managedGroups
+                        .map((String group) {
+                          final isActive =
+                              group == PermissionService.instance.activeGroupId;
+                          return PopupMenuItem<String>(
+                            value: group,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  isActive
+                                      ? Icons.check_circle
+                                      : Icons.workspaces_outline,
+                                  color: isActive
+                                      ? Colors.greenAccent
+                                      : Colors.white54,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  group,
+                                  style: TextStyle(
+                                    color: isActive
+                                        ? Colors.white
+                                        : Colors.white70,
+                                    fontWeight: isActive
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 12),
-                            Text(group, style: TextStyle(
-                              color: isActive ? Colors.white : Colors.white70,
-                              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                            )),
-                          ],
-                        ),
-                      );
-                    }).toList();
+                          );
+                        })
+                        .toList();
                   },
                 ),
               const SizedBox(width: 16),
             ],
           ),
-          drawer: isMobile ? Drawer(
-            child: _buildSidebar(plugins, isDrawer: true),
-          ) : null,
+          drawer: isMobile
+              ? Drawer(child: _buildSidebar(plugins, isDrawer: true))
+              : null,
           body: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (!isMobile) _buildSidebar(plugins),
-              
+
               // 右側動態內容區
               Expanded(
-                child: _activePlugin == null 
-                  ? const Center(
-                      child: Text(
-                        '您目前沒有權限存取任何功能',
-                        style: TextStyle(fontSize: 18, color: Colors.white54),
-                      ),
-                    )
-                  : SingleChildScrollView(
-                      padding: EdgeInsets.all(isMobile ? 16.0 : 32.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _activePlugin!.buildCustomUI(context, _currentValues, _handlePropertyChange) ??
-                          DynamicUIRenderer(
-                            properties: _activePlugin!.properties,
-                            currentValues: _currentValues,
-                            onChanged: _handlePropertyChange,
-                          ),
-                          const SizedBox(height: 32),
-                          ElevatedButton(
-                            onPressed: _handleSave,
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              backgroundColor: const Color(0xFF6366F1),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                child: _activePlugin == null
+                    ? const Center(
+                        child: Text(
+                          '您目前沒有權限存取任何功能',
+                          style: TextStyle(fontSize: 18, color: Colors.white54),
+                        ),
+                      )
+                    : SingleChildScrollView(
+                        padding: EdgeInsets.all(isMobile ? 16.0 : 32.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _activePlugin!.buildCustomUI(
+                                  context,
+                                  _currentValues,
+                                  _handlePropertyChange,
+                                ) ??
+                                DynamicUIRenderer(
+                                  properties: _activePlugin!.properties,
+                                  currentValues: _currentValues,
+                                  onChanged: _handlePropertyChange,
+                                ),
+                            const SizedBox(height: 32),
+                            ElevatedButton(
+                              onPressed: _handleSave,
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                backgroundColor: const Color(0xFF6366F1),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: const Text(
+                                '儲存至雲端',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                            child: const Text(
-                              '儲存至雲端',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
               ),
             ],
           ),

@@ -17,6 +17,9 @@ abstract class BasePlugin {
   /// 存取此插件要求的最低權限等級 (Rank)
   int get requiredRank => 0;
 
+  /// 是否在導航選單中隱藏
+  bool get isHidden => false;
+
   /// 插件定義的可配置屬性清單
   List<PluginProperty> get properties => [];
 
@@ -33,7 +36,7 @@ abstract class BasePlugin {
     try {
       final database = FirebaseDatabase.instance;
       final ref = database.ref('plugin_data/$id/submissions').push();
-      
+
       final currentUser = PermissionService.instance.currentUser;
       final uid = currentUser?.uid;
       final groupId = PermissionService.instance.activeGroupId;

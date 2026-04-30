@@ -15,7 +15,11 @@ class OrgManagementPlugin extends BasePlugin {
   int get requiredRank => 100; // 系統管理員
 
   @override
-  Widget? buildCustomUI(BuildContext context, Map<String, dynamic> currentValues, Function(String, dynamic) onChanged) {
+  Widget? buildCustomUI(
+    BuildContext context,
+    Map<String, dynamic> currentValues,
+    Function(String, dynamic) onChanged,
+  ) {
     return _OrgManagementUI(pluginId: id);
   }
 }
@@ -29,7 +33,9 @@ class _OrgManagementUI extends StatefulWidget {
 }
 
 class _OrgManagementUIState extends State<_OrgManagementUI> {
-  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref('organizations');
+  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref(
+    'organizations',
+  );
   List<OrganizationModel> _organizations = [];
 
   final TextEditingController _newOrgNameCtrl = TextEditingController();
@@ -47,7 +53,9 @@ class _OrgManagementUIState extends State<_OrgManagementUI> {
       if (data != null) {
         final List<OrganizationModel> loaded = [];
         data.forEach((key, value) {
-          loaded.add(OrganizationModel.fromJson(Map<String, dynamic>.from(value)));
+          loaded.add(
+            OrganizationModel.fromJson(Map<String, dynamic>.from(value)),
+          );
         });
         loaded.sort((a, b) => a.path.compareTo(b.path));
         if (mounted) {
@@ -62,7 +70,11 @@ class _OrgManagementUIState extends State<_OrgManagementUI> {
   }
 
   void _initializeDefaultOrganization() async {
-    final defaultOrg = const OrganizationModel(id: 'org_global', name: '全域', path: 'GLOBAL');
+    final defaultOrg = const OrganizationModel(
+      id: 'org_global',
+      name: '全域',
+      path: 'GLOBAL',
+    );
     await _dbRef.child(defaultOrg.id).set(defaultOrg.toJson());
   }
 
@@ -73,7 +85,7 @@ class _OrgManagementUIState extends State<_OrgManagementUI> {
     final parentPath = _selectedParentPath ?? 'GLOBAL';
     final path = parentPath == 'GLOBAL' ? 'GLOBAL/$name' : '$parentPath/$name';
     final id = DateTime.now().millisecondsSinceEpoch.toString();
-    
+
     final newOrg = OrganizationModel(id: id, name: name, path: path);
     await _dbRef.child(id).set(newOrg.toJson());
 
@@ -81,9 +93,9 @@ class _OrgManagementUIState extends State<_OrgManagementUI> {
       setState(() {
         _newOrgNameCtrl.clear();
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('已建立組織: $path')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('已建立組織: $path')));
     }
   }
 
@@ -101,7 +113,14 @@ class _OrgManagementUIState extends State<_OrgManagementUI> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text('組織樹狀結構', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+        const Text(
+          '組織樹狀結構',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(16),
@@ -118,16 +137,26 @@ class _OrgManagementUIState extends State<_OrgManagementUI> {
                 padding: EdgeInsets.only(left: indent * 20.0, bottom: 8.0),
                 child: Row(
                   children: [
-                    const Icon(Icons.account_tree, color: Colors.indigoAccent, size: 20),
+                    const Icon(
+                      Icons.account_tree,
+                      color: Colors.indigoAccent,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         '${org.name} (${org.path})',
-                        style: const TextStyle(color: Colors.white70, fontSize: 16),
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.person_add, color: Colors.greenAccent),
+                      icon: const Icon(
+                        Icons.person_add,
+                        color: Colors.greenAccent,
+                      ),
                       tooltip: '指派負責人',
                       onPressed: () => _assignUserDialog(org.path),
                     ),
@@ -138,7 +167,14 @@ class _OrgManagementUIState extends State<_OrgManagementUI> {
           ),
         ),
         const SizedBox(height: 32),
-        const Text('新增組織', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+        const Text(
+          '新增組織',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(16),
@@ -166,10 +202,19 @@ class _OrgManagementUIState extends State<_OrgManagementUI> {
                       isDense: true,
                       isExpanded: true, // 新增此行以防止長文字溢出
                       items: [
-                        const DropdownMenuItem(value: null, child: Text('無 (GLOBAL)')),
-                        ..._organizations.map((o) => DropdownMenuItem(value: o.path, child: Text(o.path))),
+                        const DropdownMenuItem(
+                          value: null,
+                          child: Text('無 (GLOBAL)'),
+                        ),
+                        ..._organizations.map(
+                          (o) => DropdownMenuItem(
+                            value: o.path,
+                            child: Text(o.path),
+                          ),
+                        ),
                       ],
-                      onChanged: (val) => setState(() => _selectedParentPath = val),
+                      onChanged: (val) =>
+                          setState(() => _selectedParentPath = val),
                     ),
                   ),
                 ),
@@ -193,9 +238,18 @@ class _OrgManagementUIState extends State<_OrgManagementUI> {
                 onPressed: _addOrganization,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.indigoAccent,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 18,
+                  ),
                 ),
-                child: const Text('新增', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                child: const Text(
+                  '新增',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ],
           ),
@@ -233,7 +287,10 @@ class _AssignUserDialogState extends State<_AssignUserDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: const Color(0xFF1E293B),
-      title: Text('指派負責人 - ${widget.orgPath}', style: const TextStyle(color: Colors.white)),
+      title: Text(
+        '指派負責人 - ${widget.orgPath}',
+        style: const TextStyle(color: Colors.white),
+      ),
       content: SizedBox(
         width: 400,
         height: 300,
@@ -261,12 +318,23 @@ class _AssignUserDialogState extends State<_AssignUserDialog> {
                 itemBuilder: (ctx, index) {
                   final user = _searchResults[index];
                   return ListTile(
-                    title: Text(user.name, style: const TextStyle(color: Colors.white)),
-                    subtitle: Text('${user.roleId} (Rank: ${user.rank})', style: const TextStyle(color: Colors.white54)),
+                    title: Text(
+                      user.name,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    subtitle: Text(
+                      '${user.roleId} (Rank: ${user.rank})',
+                      style: const TextStyle(color: Colors.white54),
+                    ),
                     trailing: ElevatedButton(
                       onPressed: () => _assign(user.uid),
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.greenAccent),
-                      child: const Text('指派', style: TextStyle(color: Colors.black)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.greenAccent,
+                      ),
+                      child: const Text(
+                        '指派',
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ),
                   );
                 },

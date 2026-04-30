@@ -44,7 +44,9 @@ class _SchemaEditorState extends State<_SchemaEditor> {
 
   Future<void> _loadSchema() async {
     try {
-      final snapshot = await FirebaseDatabase.instance.ref('schemas/registration/master').get();
+      final snapshot = await FirebaseDatabase.instance
+          .ref('schemas/registration/master')
+          .get();
       if (snapshot.exists) {
         final data = snapshot.value as Map<dynamic, dynamic>;
         if (data['fields'] != null) {
@@ -73,13 +75,19 @@ class _SchemaEditorState extends State<_SchemaEditor> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('表單架構儲存成功'), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text('表單架構儲存成功'),
+            backgroundColor: Colors.green,
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('儲存失敗: $e'), backgroundColor: Colors.redAccent),
+          SnackBar(
+            content: Text('儲存失敗: $e'),
+            backgroundColor: Colors.redAccent,
+          ),
         );
       }
     } finally {
@@ -117,13 +125,19 @@ class _SchemaEditorState extends State<_SchemaEditor> {
           children: [
             const Text(
               '大會標準表單定義 (Schema Master)',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
             ElevatedButton.icon(
               onPressed: _addField,
               icon: const Icon(Icons.add),
               label: const Text('新增欄位'),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.indigoAccent),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.indigoAccent,
+              ),
             ),
           ],
         ),
@@ -133,27 +147,33 @@ class _SchemaEditorState extends State<_SchemaEditor> {
           style: TextStyle(color: Colors.white54),
         ),
         const SizedBox(height: 24),
-        
+
         if (_fields.isEmpty)
           const Padding(
             padding: EdgeInsets.all(32.0),
-            child: Center(child: Text('目前沒有自訂欄位', style: TextStyle(color: Colors.white54))),
+            child: Center(
+              child: Text('目前沒有自訂欄位', style: TextStyle(color: Colors.white54)),
+            ),
           ),
-          
-        for (int i = 0; i < _fields.length; i++)
-          _buildFieldEditor(i),
-          
+
+        for (int i = 0; i < _fields.length; i++) _buildFieldEditor(i),
+
         const SizedBox(height: 32),
         ElevatedButton(
           onPressed: _isSaving ? null : _saveSchema,
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
             backgroundColor: Colors.green.shade600,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
-          child: _isSaving 
-            ? const CircularProgressIndicator(color: Colors.white)
-            : const Text('儲存全域表單設定', style: TextStyle(fontSize: 18, color: Colors.white)),
+          child: _isSaving
+              ? const CircularProgressIndicator(color: Colors.white)
+              : const Text(
+                  '儲存全域表單設定',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
         ),
       ],
     );
@@ -161,7 +181,7 @@ class _SchemaEditorState extends State<_SchemaEditor> {
 
   Widget _buildFieldEditor(int index) {
     final field = _fields[index];
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -218,7 +238,10 @@ class _SchemaEditorState extends State<_SchemaEditor> {
                   items: const [
                     DropdownMenuItem(value: 'text', child: Text('文字輸入')),
                     DropdownMenuItem(value: 'dropdown', child: Text('下拉選單')),
-                    DropdownMenuItem(value: 'boolean', child: Text('勾選框 (是/否)')),
+                    DropdownMenuItem(
+                      value: 'boolean',
+                      child: Text('勾選框 (是/否)'),
+                    ),
                   ],
                   onChanged: (v) {
                     if (v != null) setState(() => field['type'] = v);
@@ -234,7 +257,9 @@ class _SchemaEditorState extends State<_SchemaEditor> {
                       onChanged: (v) {
                         setState(() => field['required'] = v ?? false);
                       },
-                      fillColor: MaterialStateProperty.resolveWith((states) => Colors.indigoAccent),
+                      fillColor: MaterialStateProperty.resolveWith(
+                        (states) => Colors.indigoAccent,
+                      ),
                     ),
                     const Text('必填欄位', style: TextStyle(color: Colors.white)),
                   ],
@@ -253,7 +278,7 @@ class _SchemaEditorState extends State<_SchemaEditor> {
               style: const TextStyle(color: Colors.white),
               onChanged: (v) => field['options'] = v,
             ),
-          ]
+          ],
         ],
       ),
     );

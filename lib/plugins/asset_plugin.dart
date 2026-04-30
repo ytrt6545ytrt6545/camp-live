@@ -14,37 +14,37 @@ class AssetPlugin extends BasePlugin {
 
   @override
   List<PluginProperty> get properties => [
-        PluginProperty(
-          key: 'equipment_id',
-          label: '資材編號 (QR)',
-          type: PropertyType.qrScanner,
-          defaultValue: '',
-        ),
-        PluginProperty(
-          key: 'equipment_name',
-          label: '設備名稱',
-          type: PropertyType.string,
-          defaultValue: '',
-        ),
-        PluginProperty(
-          key: 'quantity',
-          label: '數量',
-          type: PropertyType.number,
-          defaultValue: 1,
-        ),
-        PluginProperty(
-          key: 'is_borrowed',
-          label: '是否借出',
-          type: PropertyType.boolean,
-          defaultValue: false,
-        ),
-        PluginProperty(
-          key: 'borrower_signature',
-          label: '領用人簽名',
-          type: PropertyType.signature,
-          defaultValue: '',
-        ),
-      ];
+    PluginProperty(
+      key: 'equipment_id',
+      label: '資材編號 (QR)',
+      type: PropertyType.qrScanner,
+      defaultValue: '',
+    ),
+    PluginProperty(
+      key: 'equipment_name',
+      label: '設備名稱',
+      type: PropertyType.string,
+      defaultValue: '',
+    ),
+    PluginProperty(
+      key: 'quantity',
+      label: '數量',
+      type: PropertyType.number,
+      defaultValue: 1,
+    ),
+    PluginProperty(
+      key: 'is_borrowed',
+      label: '是否借出',
+      type: PropertyType.boolean,
+      defaultValue: false,
+    ),
+    PluginProperty(
+      key: 'borrower_signature',
+      label: '領用人簽名',
+      type: PropertyType.signature,
+      defaultValue: '',
+    ),
+  ];
 
   @override
   void onAction(String actionId, Map<String, dynamic> data) {

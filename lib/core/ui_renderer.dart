@@ -22,7 +22,9 @@ class DynamicUIRenderer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: properties.map((prop) => _buildPropertyItem(context, prop)).toList(),
+      children: properties
+          .map((prop) => _buildPropertyItem(context, prop))
+          .toList(),
     );
   }
 
@@ -64,7 +66,7 @@ class DynamicUIRenderer extends StatelessWidget {
           style: const TextStyle(color: Colors.white),
           onChanged: (val) => onChanged(prop.key, val),
         );
-      
+
       case PropertyType.number:
         final numValue = (value as num).toDouble();
         return Row(
@@ -84,13 +86,16 @@ class DynamicUIRenderer extends StatelessWidget {
               width: 40,
               child: Text(
                 numValue.round().toString(),
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.end,
               ),
             ),
           ],
         );
-      
+
       case PropertyType.boolean:
         final boolValue = value as bool;
         return InkWell(
@@ -115,7 +120,7 @@ class DynamicUIRenderer extends StatelessWidget {
             ),
           ),
         );
-      
+
       case PropertyType.color:
         final colorValue = value as Color? ?? Colors.indigoAccent;
         return InkWell(
@@ -138,7 +143,7 @@ class DynamicUIRenderer extends StatelessWidget {
             ],
           ),
         );
-      
+
       case PropertyType.options:
         final opts = prop.options ?? [];
         if (opts.length <= 4) {
@@ -146,7 +151,9 @@ class DynamicUIRenderer extends StatelessWidget {
           return SizedBox(
             width: double.infinity,
             child: SegmentedButton<String>(
-              segments: opts.map((opt) => ButtonSegment(value: opt, label: Text(opt))).toList(),
+              segments: opts
+                  .map((opt) => ButtonSegment(value: opt, label: Text(opt)))
+                  .toList(),
               selected: {value as String},
               onSelectionChanged: (set) => onChanged(prop.key, set.first),
               style: ButtonStyle(
@@ -179,13 +186,13 @@ class DynamicUIRenderer extends StatelessWidget {
             onChanged: (val) => onChanged(prop.key, val),
           );
         }
-        
+
       case PropertyType.qrScanner:
         return _QRScannerField(
           initialValue: value as String?,
           onChanged: (val) => onChanged(prop.key, val),
         );
-      
+
       case PropertyType.signature:
         return _SignatureField(
           initialBase64: value as String?,
@@ -212,26 +219,30 @@ class DynamicUIRenderer extends StatelessWidget {
         content: Wrap(
           spacing: 12,
           runSpacing: 12,
-          children: colors.map((c) => 
-            GestureDetector(
-              onTap: () {
-                onChanged(key, c);
-                Navigator.pop(ctx);
-              },
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: c,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: currentColor == c ? Colors.white : Colors.transparent,
-                    width: 2,
+          children: colors
+              .map(
+                (c) => GestureDetector(
+                  onTap: () {
+                    onChanged(key, c);
+                    Navigator.pop(ctx);
+                  },
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: c,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: currentColor == c
+                            ? Colors.white
+                            : Colors.transparent,
+                        width: 2,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            )
-          ).toList(),
+              )
+              .toList(),
         ),
       ),
     );
@@ -253,7 +264,7 @@ class DynamicUIRenderer extends StatelessWidget {
 class _QRScannerField extends StatefulWidget {
   final String? initialValue;
   final ValueChanged<String> onChanged;
-  
+
   const _QRScannerField({this.initialValue, required this.onChanged});
 
   @override
@@ -297,7 +308,10 @@ class _QRScannerFieldState extends State<_QRScannerField> {
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
             ),
             onChanged: widget.onChanged,
           ),
@@ -406,16 +420,16 @@ class _SignatureFieldState extends State<_SignatureField> {
 
   void _saveSignature() async {
     if (_controller.isEmpty) return;
-    
+
     // 匯出為 PNG 格式的 bytes
     final Uint8List? data = await _controller.toPngBytes();
     if (data != null) {
       final base64String = base64Encode(data);
       widget.onChanged(base64String);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('簽名已確認並轉換')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('簽名已確認並轉換')));
       }
     }
   }
@@ -456,17 +470,25 @@ class _SignatureFieldState extends State<_SignatureField> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.indigoAccent,
               ),
-              label: const Text('確認簽名', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              label: const Text(
+                '確認簽名',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         ),
         if (widget.initialBase64 != null && widget.initialBase64!.isNotEmpty)
           const Padding(
             padding: EdgeInsets.only(top: 8.0),
-            child: Text('✅ 已有儲存的簽名資料', style: TextStyle(color: Colors.greenAccent, fontSize: 12)),
+            child: Text(
+              '✅ 已有儲存的簽名資料',
+              style: TextStyle(color: Colors.greenAccent, fontSize: 12),
+            ),
           ),
       ],
     );
   }
 }
-

@@ -15,32 +15,32 @@ class CateringPlugin extends BasePlugin {
 
   @override
   List<PluginProperty> get properties => [
-        PluginProperty(
-          key: 'volunteer_name',
-          label: '義工姓名',
-          type: PropertyType.string,
-          defaultValue: '',
-        ),
-        PluginProperty(
-          key: 'meal_type',
-          label: '用餐類型',
-          type: PropertyType.options,
-          options: ['葷', '全素', '蛋奶素'],
-          defaultValue: '葷',
-        ),
-        PluginProperty(
-          key: 'pickup_location',
-          label: '取餐地點',
-          type: PropertyType.string,
-          defaultValue: '',
-        ),
-        PluginProperty(
-          key: 'is_picked_up',
-          label: '是否已取餐',
-          type: PropertyType.boolean,
-          defaultValue: false,
-        ),
-      ];
+    PluginProperty(
+      key: 'volunteer_name',
+      label: '義工姓名',
+      type: PropertyType.string,
+      defaultValue: '',
+    ),
+    PluginProperty(
+      key: 'meal_type',
+      label: '用餐類型',
+      type: PropertyType.options,
+      options: ['葷', '全素', '蛋奶素'],
+      defaultValue: '葷',
+    ),
+    PluginProperty(
+      key: 'pickup_location',
+      label: '取餐地點',
+      type: PropertyType.string,
+      defaultValue: '',
+    ),
+    PluginProperty(
+      key: 'is_picked_up',
+      label: '是否已取餐',
+      type: PropertyType.boolean,
+      defaultValue: false,
+    ),
+  ];
 
   @override
   void onAction(String actionId, Map<String, dynamic> data) {

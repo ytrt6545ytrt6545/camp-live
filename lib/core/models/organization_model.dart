@@ -10,11 +10,7 @@ class OrganizationModel {
   });
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'path': path,
-    };
+    return {'id': id, 'name': name, 'path': path};
   }
 
   factory OrganizationModel.fromJson(Map<String, dynamic> json) {

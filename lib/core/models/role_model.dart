@@ -3,18 +3,10 @@ class RoleModel {
   final String name;
   final int rank;
 
-  const RoleModel({
-    required this.id,
-    required this.name,
-    required this.rank,
-  });
+  const RoleModel({required this.id, required this.name, required this.rank});
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'rank': rank,
-    };
+    return {'id': id, 'name': name, 'rank': rank};
   }
 
   factory RoleModel.fromJson(Map<String, dynamic> json) {
